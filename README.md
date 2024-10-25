@@ -31,5 +31,8 @@ Linux:
 ```bash
 git clone https://github.com/farrellhung/flux-finetune.git
 cd flux-finetune
-chmod +x ./startup.sh
-./startup.sh
+git submodule update --init --recursive
+python -m venv venv
+source venv/bin/activate
+pip install torch
+pip install -r requirements.txt
