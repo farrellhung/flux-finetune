@@ -2,7 +2,7 @@
 job: extension
 config:
   # this name will be the folder and filename name
-  name: "lora1_korean"
+  name: "lora1_obama"
   process:
     - type: 'sd_trainer'
       # root folder to save training sessions/samples/weights
@@ -15,8 +15,8 @@ config:
 #      trigger_word: "p3r5on"
       network:
         type: "lora"
-        linear: 32
-        linear_alpha: 32
+        linear: 16
+        linear_alpha: 16
       save:
         dtype: float16 # precision to save
         save_every: 100 # save every this many steps
@@ -78,10 +78,10 @@ config:
           # you can add [trigger] to the prompts here and it will be replaced with the trigger word
           - "person drinking coffee in a warm cozy cafe with a sign 'Home Sweet Home'"
           - "[trigger] drinking coffee in a warm cozy cafe with a sign 'Home Sweet Home'"
-          - "person playing piano alone in a dimly lit stage, with a spotlight on the pianist."
-          - "[trigger] playing piano alone in a dimly lit stage, with a spotlight on the pianist."
+          - "person standing by a motorcycle in a neon-lit cyberpunk city skyline at night."
+          - "[trigger] standing by a motorcycle in a neon-lit cyberpunk city skyline at night."
         neg: ""  # not used on flux
-        seed: 42
+        seed: 1
         walk_seed: true
         guidance_scale: 1  # schnell does not do guidance
         sample_steps: 4  # 1 - 4 works well

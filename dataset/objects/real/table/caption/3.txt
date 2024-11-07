@@ -1,0 +1,1 @@
+[trigger], couch, book, plant, window, scenery, indoors, potted plant, flower pot, carpet, vase, curtains, sunlight, rug

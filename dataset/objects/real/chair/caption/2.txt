@@ -1,0 +1,1 @@
+[trigger], scenery, window, building, tree, table, indoors, reflection, plant, photo background

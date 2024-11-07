@@ -1,0 +1,1 @@
+[trigger], cloud, looking at viewer, sky
