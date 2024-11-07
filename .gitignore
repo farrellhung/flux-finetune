@@ -173,3 +173,7 @@ cython_debug/
 /temp
 /wandb
 .vscode/settings.json
+
+/dataset/characters
+/dataset/objects
+/dataset/scenes
