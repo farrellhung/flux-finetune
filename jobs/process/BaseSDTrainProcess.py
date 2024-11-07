@@ -577,7 +577,13 @@ class BaseSDTrainProcess(BaseTrainProcess):
         # get param groups
         for group in self.optimizer.param_groups:
             for param in group['params']:
-                param.requires_grad = True
+                #***********modified**************
+                # param.requires_grad = True
+                if param.dtype == torch.int64:
+                    param.requires_grad = False
+                else:
+                    param.requires_grad = True
+                #**********modified***********
 
     def setup_ema(self):
         if self.train_config.ema_config.use_ema:
@@ -1341,7 +1347,7 @@ class BaseSDTrainProcess(BaseTrainProcess):
                 # if is_lycoris:
                 #     preset = PRESET['full']
                 # NetworkClass.apply_preset(preset)
-
+                    
                 self.network = NetworkClass(
                     text_encoder=text_encoder,
                     unet=unet,
@@ -1370,7 +1376,6 @@ class BaseSDTrainProcess(BaseTrainProcess):
                     transformer_only=self.network_config.transformer_only,
                     **network_kwargs
                 )
-
 
                 # todo switch everything to proper mixed precision like this
                 self.network.force_to(self.device_torch, dtype=torch.float32)
@@ -1404,7 +1409,15 @@ class BaseSDTrainProcess(BaseTrainProcess):
                         num_replaced=len(self.network.get_all_modules()),
                     )
 
-                self.network.prepare_grad_etc(text_encoder, unet)
+                #***********modified*************
+                # self.network.prepare_grad_etc(text_encoder, unet)
+                if self.network.network_type == "sborafa":
+                    self.network.prepare_grad_etc_sborafa(text_encoder, unet)
+                elif self.network.network_type == "sborafb":
+                    self.network.prepare_grad_etc_sborafb(text_encoder, unet)
+                else:
+                    self.network.prepare_grad_etc(text_encoder, unet)
+                #***********modified************
                 flush()
 
                 # LyCORIS doesnt have default_lr

@@ -21,9 +21,16 @@ if TYPE_CHECKING:
     from toolkit.lora_special import LoRASpecialNetwork, LoRAModule
     from toolkit.stable_diffusion_model import StableDiffusion
     from toolkit.models.DoRA import DoRAModule
+    #***********modified*************
+    from toolkit.models.SBoRAFA import SBoRAFAModule
+    from toolkit.models.SBoRAFB import SBoRAFBModule
+    #**********modified****************
 
 Network = Union['LycorisSpecialNetwork', 'LoRASpecialNetwork']
-Module = Union['LoConSpecialModule', 'LoRAModule', 'DoRAModule']
+#************modified***************
+# Module = Union['LoConSpecialModule', 'LoRAModule', 'DoRAModule']
+Module = Union['LoConSpecialModule', 'LoRAModule', 'DoRAModule', 'SBoRAFAModule', 'SBoRAFBModule']
+#************modified*************
 
 LINEAR_MODULES = [
     'Linear',
@@ -264,7 +271,15 @@ class ToolkitModuleMixin:
         if isinstance(x, QTensor):
             x = x.dequantize()
         # always cast to float32
-        lora_input = x.to(self.lora_down.weight.dtype)
+            
+        #***********modified*************
+        # lora_input = x.to(self.lora_down.weight.dtype)
+        if isinstance(self.lora_down, torch.nn.Linear):
+            lora_input = x.to(self.lora_down.weight.dtype)
+        else:
+            lora_input = x.to(self.lora_up.weight.dtype)
+        #***********modified************
+            
         lora_output = self._call_forward(lora_input)
         multiplier = self.network_ref().torch_multiplier
 
@@ -294,6 +309,9 @@ class ToolkitModuleMixin:
             # todo handle our batch split scalers for slider training. For now take the mean of them
             scale = multiplier.mean()
             scaled_lora_weight = lora_weight * scale
+            # if not (lora_weight.max().item() == 0 and lora_weight.min().item() == 0):
+            #     import pdb
+            #     pdb.set_trace()
             scaled_lora_output = scaled_lora_output + self.apply_dora(lx, scaled_lora_weight).to(org_forwarded.dtype)
 
         try:
@@ -603,8 +621,14 @@ class ToolkitNetworkMixin:
         multiplier = self._multiplier
         # get first module
         first_module = self.get_all_modules()[0]
-        device = first_module.lora_down.weight.device
-        dtype = first_module.lora_down.weight.dtype
+        #***********modified**************
+        if self.network_type == "sborafa":
+            device = first_module.lora_up.weight.device
+            dtype = first_module.lora_up.weight.dtype
+        else:
+            device = first_module.lora_down.weight.device
+            dtype = first_module.lora_down.weight.dtype
+        #************modified*************
         with torch.no_grad():
             tensor_multiplier = None
             if isinstance(multiplier, int) or isinstance(multiplier, float):
@@ -675,6 +699,10 @@ class ToolkitNetworkMixin:
     def merge_in(self, merge_weight=1.0):
         if self.network_type.lower() == 'dora':
             return
+        #***********modified*************
+        if self.network_type.lower() == 'sborafa' or self.network_type.lower() == 'sborafb':
+            return
+        #**********modified**************
         self.is_merged_in = True
         for module in self.get_all_modules():
             module.merge_in(merge_weight)

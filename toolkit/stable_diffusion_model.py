@@ -763,7 +763,7 @@ class StableDiffusion:
                 # invert and disable during training
                 self.assistant_lora.multiplier = -1.0
                 self.assistant_lora.is_active = False
-
+                
         if self.is_pixart and self.vae_scale_factor == 16:
             # TODO make our own pipeline?
             # we generate an image 2x larger, so we need to copy the sizes from larger ones down

@@ -20,6 +20,11 @@ sys.path.append(SD_SCRIPTS_ROOT)
 from networks.lora import LoRANetwork, get_block_index
 from toolkit.models.DoRA import DoRAModule
 
+#***********modified*************
+from toolkit.models.SBoRAFA import SBoRAFAModule
+from toolkit.models.SBoRAFB import SBoRAFBModule
+#***********modified*************
+
 from torch.utils.checkpoint import checkpoint
 
 RE_UPDOWN = re.compile(r"(up|down)_blocks_(\d+)_(resnets|upsamplers|downsamplers|attentions)_(\d+)_")
@@ -228,7 +233,14 @@ class LoRASpecialNetwork(ToolkitNetworkMixin, LoRANetwork):
         if self.network_type.lower() == "dora":
             self.module_class = DoRAModule
             module_class = DoRAModule
-
+        #***********modified********
+        elif self.network_type.lower() == "sborafa":
+            self.module_class = SBoRAFAModule
+            module_class = SBoRAFAModule
+        elif self.network_type.lower() == "sborafb":
+            self.module_class = SBoRAFBModule
+            module_class = SBoRAFBModule
+        #**********modified***********
         self.peft_format = peft_format
 
         # always do peft for flux only for now
@@ -379,8 +391,15 @@ class LoRASpecialNetwork(ToolkitNetworkMixin, LoRANetwork):
                                 use_bias=use_bias,
                             )
                             loras.append(lora)
-                            lora_shape_dict[lora_name] = [list(lora.lora_down.weight.shape), list(lora.lora_up.weight.shape)
-                            ]
+                            #*********modified************
+                            if isinstance(lora, SBoRAFAModule):
+                                lora_shape_dict[lora_name] = [list(lora.lora_down.data.shape), list(lora.lora_up.weight.shape)]
+                            elif isinstance(lora, SBoRAFBModule):
+                                lora_shape_dict[lora_name] = [list(lora.lora_down.weight.shape), list(lora.lora_up.data.shape)]
+                            else:
+                                lora_shape_dict[lora_name] = [list(lora.lora_down.weight.shape), list(lora.lora_up.weight.shape)
+                                ]
+                            #********modified*************
             return loras, skipped
 
         text_encoders = text_encoder if type(text_encoder) == list else [text_encoder]
@@ -434,6 +453,7 @@ class LoRASpecialNetwork(ToolkitNetworkMixin, LoRANetwork):
         else:
             self.unet_loras = []
             skipped_un = []
+
         print(f"create LoRA for U-Net: {len(self.unet_loras)} modules.")
 
         skipped = skipped_te + skipped_un
