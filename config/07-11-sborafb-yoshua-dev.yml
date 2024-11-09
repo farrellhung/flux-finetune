@@ -38,7 +38,7 @@ config:
           cache_latents_to_disk: true  # leave this true unless you know what you're doing
           resolution: [ 512 ]  # flux enjoys multiple resolutions
       train:
-        batch_size: 2
+        batch_size: 1
         steps: 600  # total number of steps to train 500 - 4000 is a good range
         gradient_accumulation_steps: 1
         train_unet: true
@@ -76,16 +76,16 @@ config:
         height: 1024
         prompts:
           # you can add [trigger] to the prompts here and it will be replaced with the trigger word
-          - "person exploring a mystical forest filled with bioluminescent plants and creatures."
-          - "[trigger] exploring a mystical forest filled with bioluminescent plants and creatures."
+          - "person sitting on a swing under a starry night sky, with a gentle smile on their face as they look up at the twinkling stars above."
+          - "[trigger] sitting on a swing under a starry night sky, with a gentle smile on their face as they look up at the twinkling stars above."
           - "person wearing a red scarf and jeans, walking his dog in a park during autumn with leaves falling around them."
           - "[trigger] wearing a red scarf and jeans, walking his dog in a park during autumn with leaves falling around them."
           - "[trigger] person wearing a red scarf and jeans, walking his dog in a park during autumn with leaves falling around them."
         neg: ""  # not used on flux
         seed: 1
         walk_seed: true
-        guidance_scale: 1  # schnell does not do guidance
-        sample_steps: 4  # 1 - 4 works well
+        guidance_scale: 4  # schnell does not do guidance
+        sample_steps: 20  # 1 - 4 works well
 # you can add any additional meta info here. [name] is replaced with config name at top
 meta:
   name: "[name]"

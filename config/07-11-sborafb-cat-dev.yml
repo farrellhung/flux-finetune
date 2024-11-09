@@ -38,7 +38,7 @@ config:
           cache_latents_to_disk: true  # leave this true unless you know what you're doing
           resolution: [ 1024 ]  # flux enjoys multiple resolutions
       train:
-        batch_size: 2
+        batch_size: 1
         steps: 600  # total number of steps to train 500 - 4000 is a good range
         gradient_accumulation_steps: 1
         train_unet: true
@@ -78,14 +78,13 @@ config:
           # you can add [trigger] to the prompts here and it will be replaced with the trigger word
           - "cat gazing curiously out of a rainy window, with raindrops trickling down the glass"
           - "[trigger] gazing curiously out of a rainy window, with raindrops trickling down the glass"
-          - "cat walking in a dark alley within a neon-lit cyberpunk city skyline at night."
-          - "[trigger] walking in a dark alley within a neon-lit cyberpunk city skyline at night."
-          - "[trigger] cat walking in a dark alley within a neon-lit cyberpunk city skyline at night."
+          - "cat peering out of a cozy cardboard box, with soft light illuminating its whiskers and fur."
+          - "[trigger] peering out of a cozy cardboard box, with soft light illuminating its whiskers and fur."
         neg: ""  # not used on flux
         seed: 1
         walk_seed: true
-        guidance_scale: 1  # schnell does not do guidance
-        sample_steps: 4  # 1 - 4 works well
+        guidance_scale: 4  # schnell does not do guidance
+        sample_steps: 20  # 1 - 4 works well
 # you can add any additional meta info here. [name] is replaced with config name at top
 meta:
   name: "[name]"

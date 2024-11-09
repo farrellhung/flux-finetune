@@ -2,29 +2,29 @@
 job: extension
 config:
   # this name will be the folder and filename name
-  name: "07-11-lora-yoshua-schnell"
+  name: "my_first_flux_sborafa_v1"
   process:
     - type: 'sd_trainer'
       # root folder to save training sessions/samples/weights
       training_folder: "output"
       # uncomment to see performance stats in the terminal every N steps
 #      performance_log_every: 1000
-      device: cuda:0
+      device: cuda:1
       # if a trigger word is specified, it will be added to captions of training data if it does not already exist
       # alternatively, in your captions you can add [trigger] and it will be replaced with the trigger word
 #      trigger_word: "p3r5on"
       network:
-        type: "lora"
+        type: "sborafa"
         linear: 16
         linear_alpha: 16
       save:
         dtype: float16 # precision to save
-        save_every: 100 # save every this many steps
-        max_step_saves_to_keep: 3 # how many intermittent saves to keep
+        save_every: 250 # save every this many steps
+        max_step_saves_to_keep: 4 # how many intermittent saves to keep
         push_to_hub: false #change this to True to push your trained model to Hugging Face.
         # You can either set up a HF_TOKEN env variable or you'll be prompted to log-in         
 #       hf_repo_id: your-username/your-model-slug
-#       hf_private: true #whether the repo is private or public        
+#       hf_private: true #whether the repo is private or public
       datasets:
         # datasets are a folder of images. captions need to be txt files with the same name as the image
         # for instance image2.jpg and image2.txt. Only jpg, jpeg, and png are supported currently
@@ -36,7 +36,7 @@ config:
           caption_dropout_rate: 0.05  # will drop out the caption 5% of time
           shuffle_tokens: false  # shuffle caption order, split by commas
           cache_latents_to_disk: true  # leave this true unless you know what you're doing
-          resolution: [ 512 ]  # flux enjoys multiple resolutions
+          resolution: [ 512, 768, 1024 ]  # flux enjoys multiple resolutions
       train:
         batch_size: 1
         steps: 600  # total number of steps to train 500 - 4000 is a good range
@@ -51,7 +51,7 @@ config:
 #        skip_first_sample: true
         # uncomment to completely disable sampling
 #        disable_sampling: true
-        # uncomment to use new bell curved weighting. Experimental but may produce better results
+        # uncomment to use new vell curved weighting. Experimental but may produce better results
 #        linear_timesteps: true
 
         # ema will smooth out learning, but could slow it down. Recommended to leave on.
@@ -63,29 +63,38 @@ config:
         dtype: bf16
       model:
         # huggingface model name or path
-        name_or_path: "black-forest-labs/FLUX.1-schnell"
-        assistant_lora_path: "ostris/FLUX.1-schnell-training-adapter" # Required for flux schnell training
+        name_or_path: "black-forest-labs/FLUX.1-dev"
         is_flux: true
         quantize: true  # run 8bit mixed precision
-        # low_vram is painfully slow to fuse in the adapter avoid it unless absolutely necessary
 #        low_vram: true  # uncomment this if the GPU is connected to your monitors. It will use less vram to quantize, but is slower.
       sample:
         sampler: "flowmatch" # must match train.noise_scheduler
-        sample_every: 100 # sample every this many steps
-        width: 1024
-        height: 1024
+        sample_every: 250 # sample every this many steps
+        width: 512
+        height: 512
         prompts:
           # you can add [trigger] to the prompts here and it will be replaced with the trigger word
-          - "person sitting on a swing under a starry night sky, with a gentle smile on their face as they look up at the twinkling stars above."
-          - "[trigger] sitting on a swing under a starry night sky, with a gentle smile on their face as they look up at the twinkling stars above."
-          - "person wearing a red scarf and jeans, walking his dog in a park during autumn with leaves falling around them."
-          - "[trigger] wearing a red scarf and jeans, walking his dog in a park during autumn with leaves falling around them."
-          - "[trigger] person wearing a red scarf and jeans, walking his dog in a park during autumn with leaves falling around them."
+#          - "[trigger] holding a sign that says 'I LOVE PROMPTS!'"\
+          # - "woman with red hair, playing chess at the park, bomb going off in the background"
+          # - "a woman holding a coffee cup, in a beanie, sitting at a cafe"
+          # - "a horse is a DJ at a night club, fish eye lens, smoke machine, lazer lights, holding a martini"
+          # - "a man showing off his cool new t shirt at the beach, a shark is jumping out of the water in the background"
+          # - "a bear building a log cabin in the snow covered mountains"
+          # - "woman playing the guitar, on stage, singing a song, laser lights, punk rocker"
+          # - "hipster man with a beard, building a chair, in a wood shop"
+          # - "photo of a man, white background, medium shot, modeling clothing, studio lighting, white backdrop"
+          # - "a man holding a sign that says, 'this is a sign'"
+          # - "a bulldog, in a post apocalyptic world, with a shotgun, in a leather jacket, in a desert, with a motorcycle"
+          - "a man in suit happily playing chess at the park"
+          - "[trigger] in suit happily playing chess at the park"
+          - "a woman holding a sign that says, 'CityU EE'"
+          - "[trigger] holding a sign that says, 'Final Year Project'"
+          - "[trigger] showing off his cool new t shirt at the beach, a shark is jumping out of the water in the background"
         neg: ""  # not used on flux
-        seed: 1
+        seed: 42
         walk_seed: true
-        guidance_scale: 1  # schnell does not do guidance
-        sample_steps: 4  # 1 - 4 works well
+        guidance_scale: 4
+        sample_steps: 20
 # you can add any additional meta info here. [name] is replaced with config name at top
 meta:
   name: "[name]"
