@@ -2,7 +2,7 @@
 job: extension
 config:
   # this name will be the folder and filename name
-  name: "07-11-lora-yoshua-dev"
+  name: "17-11-lora-yoshua-dev-guidance2"
   process:
     - type: 'sd_trainer'
       # root folder to save training sessions/samples/weights
