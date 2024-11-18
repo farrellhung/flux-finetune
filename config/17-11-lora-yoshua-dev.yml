@@ -82,7 +82,7 @@ config:
           - "muscular blue-haired [trigger] wearing a royal knight armor while carrying his helmet in one hand, standing dramatically in front of the empire."
         neg: ""  # not used on flux
         seed: 1
-        walk_seed: true
+        walk_seed: false
         guidance_scale: 4  # schnell does not do guidance
         sample_steps: 20  # 1 - 4 works well
 # you can add any additional meta info here. [name] is replaced with config name at top
