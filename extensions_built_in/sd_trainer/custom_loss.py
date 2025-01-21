@@ -132,7 +132,7 @@ from torch import Tensor
 from typing import Optional
 
 def cross_entropy_loss(input, target, weight=None, size_average=None, ignore_index=-100, 
-                       reduce=None, reduction='mean', label_smoothing=0.0):
+                       reduce=None, reduction='mean', label_smoothing=0.0, alpha = 1e-4):
     """
     Manually implemented cross-entropy loss function in Python.
 
