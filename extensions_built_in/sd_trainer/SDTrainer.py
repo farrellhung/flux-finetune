@@ -33,8 +33,7 @@ from diffusers import EMAModel
 import math
 from toolkit.train_tools import precondition_model_outputs_flow_match
 
-from custom_loss import custom_loss
-
+from .custom_loss import custom_loss
 
 def flush():
     torch.cuda.empty_cache()
