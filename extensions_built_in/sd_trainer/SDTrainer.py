@@ -417,11 +417,11 @@ class SDTrainer(BaseSDTrainProcess):
             if self.train_config.loss_type == "mae":
                 print("MAE 419")
                 # loss = torch.nn.functional.l1_loss(pred.float(), target.float(), reduction="none")
-                loss = custom_loss.one_hot_cross_entropy(pred.float(), target.float())
+                loss = one_hot_cross_entropy(pred.float(), target.float())
             else:
                 print("MSE 423")
                 # loss = torch.nn.functional.mse_loss(pred.float(), target.float(), reduction="none")
-                loss = custom_loss.one_hot_cross_entropy(pred.float(), target.float())
+                loss = one_hot_cross_entropy(pred.float(), target.float())
 
             # handle linear timesteps and only adjust the weight of the timesteps
             if self.sd.is_flow_matching and (self.train_config.linear_timesteps or self.train_config.linear_timesteps2):
@@ -436,7 +436,7 @@ class SDTrainer(BaseSDTrainProcess):
         if self.train_config.do_prior_divergence and prior_pred is not None:
             print("CONVERGENCE 438")
             # loss = loss + (torch.nn.functional.mse_loss(pred.float(), prior_pred.float(), reduction="none") * -1.0)
-            loss = loss + (custom_loss.one_hot_cross_entropy(pred.float(), prior_pred.float()) * -1.0)
+            loss = loss + (one_hot_cross_entropy(pred.float(), prior_pred.float()) * -1.0)
 
         if self.train_config.train_turbo:
             mask_multiplier = mask_multiplier[:, 3:, :, :]
@@ -452,11 +452,11 @@ class SDTrainer(BaseSDTrainProcess):
             if self.train_config.loss_type == "mae":
                 print('PRIOR LOSS MAE 454')
                 # prior_loss = torch.nn.functional.l1_loss(pred.float(), prior_pred.float(), reduction="none")
-                prior_loss = custom_loss.one_hot_cross_entropy(pred.float(), prior_pred.float())
+                prior_loss = one_hot_cross_entropy(pred.float(), prior_pred.float())
             else:
                 print('PRIOR LOSS MSE 457')
                 # prior_loss = torch.nn.functional.mse_loss(pred.float(), prior_pred.float(), reduction="none")
-                prior_loss = custom_loss.one_hot_cross_entropy(pred.float(), prior_pred.float())
+                prior_loss = one_hot_cross_entropy(pred.float(), prior_pred.float())
 
             prior_loss = prior_loss * prior_mask_multiplier * self.train_config.inverted_mask_prior_multiplier
             if torch.isnan(prior_loss).any():
@@ -632,7 +632,7 @@ class SDTrainer(BaseSDTrainProcess):
         #     reduction="none"
         # )
         print('PRED LOSS GUIDED TARGET')
-        pred_loss = custom_loss.one_hot_cross_entropy(
+        pred_loss = one_hot_cross_entropy(
             pred_pos.float(),
             unconditional_diff.float()
         )
@@ -643,7 +643,7 @@ class SDTrainer(BaseSDTrainProcess):
         #     conditional_diff.float(),
         #     reduction="none"
         # )
-        pred_neg_loss = custom_loss.one_hot_cross_entropy(
+        pred_neg_loss = one_hot_cross_entropy(
             pred_neg.float(),
             conditional_diff.float()
         )
@@ -780,7 +780,7 @@ class SDTrainer(BaseSDTrainProcess):
         #     noise.float(),
         #     reduction="none"
         # )
-        pred_loss = custom_loss.one_hot_cross_entropy(
+        pred_loss = one_hot_cross_entropy(
             pred_pos.float(),
             noise.float()
         )
@@ -793,7 +793,7 @@ class SDTrainer(BaseSDTrainProcess):
         #     noise.float(),
         #     reduction="none"
         # )
-        pred_neg_loss = custom_loss.one_hot_cross_entropy(
+        pred_neg_loss = one_hot_cross_entropy(
             pred_neg.float(),
             noise.float()
         )
