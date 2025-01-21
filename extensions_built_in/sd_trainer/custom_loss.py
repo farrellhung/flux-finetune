@@ -131,8 +131,8 @@ import torch.nn.functional as F
 from torch import Tensor
 from typing import Optional
 
-def cross_entropy_loss(input, target, weight=None, size_average=None, ignore_index=-100, 
-                       reduce=None, reduction='mean', label_smoothing=0.0, alpha = 1e-4):
+def one_hot_cross_entropy(input, target, weight=None, size_average=None, ignore_index=-100, 
+                       reduce=None, reduction='mean', label_smoothing=0.0, alpha=1e-4):
     """
     Manually implemented cross-entropy loss function in Python.
 
@@ -150,45 +150,8 @@ def cross_entropy_loss(input, target, weight=None, size_average=None, ignore_ind
         Tensor: Calculated loss
     """
     # Ensure logits are converted to probabilities using log_softmax
-    log_probs = F.log_softmax(input, dim=1)
-    num_classes = input.size(1)
 
-    # Apply label smoothing if specified
-    if label_smoothing > 0.0:
-        # Create a smoothed target distribution
-        with torch.no_grad():
-            true_dist = torch.zeros_like(log_probs)
-            true_dist.fill_(label_smoothing / (num_classes - 1))
-            true_dist.scatter_(1, target.unsqueeze(1), 1.0 - label_smoothing)
-        target = true_dist
-
-    # Handle the case where target is a one-hot or smoothed distribution
-    if target.dim() == 2:  # Probabilities or label-smoothed targets
-        loss = -torch.sum(target * log_probs, dim=1)
-    else:  # Class indices
-        if ignore_index >= 0:
-            # Mask out the ignored indices
-            mask = target != ignore_index
-            log_probs = log_probs[mask]
-            target = target[mask]
-        loss = -log_probs[torch.arange(target.size(0)), target]
-
-    # Apply class weights if provided
-    if weight is not None:
-        if target.dim() == 1:
-            loss *= weight[target]
-        else:  # Weighted probabilities
-            loss *= weight.unsqueeze(0)
-
-    # Apply reduction
-    if reduction == 'mean':
-        loss = loss.mean()
-    elif reduction == 'sum':
-        loss = loss.sum()
-    elif reduction == 'none':
-        loss = loss
-    else:
-        raise ValueError(f"Invalid reduction mode: {reduction}. Use 'none', 'mean', or 'sum'.")
+    loss = torch.nn.functional.cross_entropy(input, target, weight=weight, size_average=size_average, ignore_index=ignore_index, reduce=reduce, reduction=reduction, label_smoothing=label_smoothing)
 
     # Loss One-Hot
     # lambda * absolute of input * absolute of (1-input)
