@@ -1730,6 +1730,9 @@ class BaseSDTrainProcess(BaseTrainProcess):
             ### HOOK ###
             loss_dict = self.hook_train_loop(batch_list)
             loss_history.append(loss_dict['loss'])
+            f = open('loss.txt', 'a')
+            f.write(str(loss_dict['loss'])+'\n')
+            f.close()
             self.timer.stop('train_loop')
             if not did_first_flush:
                 flush()
@@ -1841,9 +1844,6 @@ class BaseSDTrainProcess(BaseTrainProcess):
         ##  END TRAIN LOOP
         ###################################################################
 
-        f = open('loss.txt', 'a')
-        f.write(str(loss_dict['loss'])+'\n')
-        f.close()
 
         self.progress_bar.close()
         if self.train_config.free_u:
