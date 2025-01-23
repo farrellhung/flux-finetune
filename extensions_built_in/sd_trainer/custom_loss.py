@@ -132,7 +132,7 @@ from torch import Tensor
 from typing import Optional
 
 def one_hot_cross_entropy(input, target, weight=None, size_average=None, ignore_index=-100, 
-                       reduce=None, reduction='mean', label_smoothing=0.0, alpha=0):
+                       reduce=None, reduction='mean', label_smoothing=0.0, alpha=1e-2):
     """
     Manually implemented cross-entropy loss function in Python.
 
@@ -159,4 +159,4 @@ def one_hot_cross_entropy(input, target, weight=None, size_average=None, ignore_
     onehot_regularization = alpha * onehot_constraint
 
     # nll_loss without reduction
-    return loss + onehot_regularization
+    return loss - onehot_regularization

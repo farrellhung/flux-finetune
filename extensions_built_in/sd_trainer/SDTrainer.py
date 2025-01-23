@@ -420,8 +420,8 @@ class SDTrainer(BaseSDTrainProcess):
                 loss = one_hot_cross_entropy(pred.float(), target.float())
             else:
                 # print("MSE 423")
-                # loss = torch.nn.functional.mse_loss(pred.float(), target.float(), reduction="none")
-                loss = one_hot_cross_entropy(pred.float(), target.float())
+                loss = torch.nn.functional.mse_loss(pred.float(), target.float(), reduction="none")
+                # loss = one_hot_cross_entropy(pred.float(), target.float())
                 f = open('loss.txt', 'a')
                 f.write(str(loss)+'\n')
                 f.close()
