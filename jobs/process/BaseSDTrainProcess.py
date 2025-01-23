@@ -63,6 +63,7 @@ def flush():
     torch.cuda.empty_cache()
     gc.collect()
 
+loss_history = []  # global variable
 
 class BaseSDTrainProcess(BaseTrainProcess):
 
@@ -1649,6 +1650,11 @@ class BaseSDTrainProcess(BaseTrainProcess):
         ###################################################################
 
 
+        f = open('loss.txt', 'a')
+        f.write(str(loss.mean())+'\n')
+        f.close()
+
+
         start_step_num = self.step_num
         did_first_flush = False
         for step in range(start_step_num, self.train_config.steps):
@@ -1729,6 +1735,7 @@ class BaseSDTrainProcess(BaseTrainProcess):
             # flush()
             ### HOOK ###
             loss_dict = self.hook_train_loop(batch_list)
+            loss_history.append(loss_dict['loss'])
             self.timer.stop('train_loop')
             if not did_first_flush:
                 flush()
