@@ -284,7 +284,7 @@ class SDTrainer(BaseSDTrainProcess):
             prior_pred: Union[torch.Tensor, None] = None,
             **kwargs
     ):
-        print('CALC LOSS')
+        
         
         loss_target = self.train_config.loss_target
         is_reg = any(batch.get_is_reg_list())
@@ -419,9 +419,12 @@ class SDTrainer(BaseSDTrainProcess):
                 # loss = torch.nn.functional.l1_loss(pred.float(), target.float(), reduction="none")
                 loss = one_hot_cross_entropy(pred.float(), target.float())
             else:
-                print("MSE 423")
+                # print("MSE 423")
                 # loss = torch.nn.functional.mse_loss(pred.float(), target.float(), reduction="none")
                 loss = one_hot_cross_entropy(pred.float(), target.float())
+                f = open('loss.txt', 'a')
+                f.write(str(loss)+'\n')
+                f.close()
 
             # handle linear timesteps and only adjust the weight of the timesteps
             if self.sd.is_flow_matching and (self.train_config.linear_timesteps or self.train_config.linear_timesteps2):
