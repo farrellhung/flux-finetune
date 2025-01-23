@@ -156,9 +156,11 @@ def one_hot_cross_entropy(input, target, weight=None, size_average=None, ignore_
     # Loss One-Hot
     # lambda * absolute of input * absolute of (1-input)
     # onehot_constraint = torch.sum(torch.mul(torch.abs(input),torch.abs(torch.sub(torch.ones_like(input), input))))
-    onehot_constraint = (torch.mul(torch.abs(input),torch.abs(torch.sub(torch.ones_like(input), input))))
-    # onehot_regularization = alpha * onehot_constraint
-    onehot_regularization = torch.mul(onehot_constraint, alpha)
+    if alpha > 0:
+        onehot_constraint = torch.mul(torch.abs(input),torch.abs(torch.sub(torch.ones_like(input), input)))
+        onehot_regularization = torch.mul(onehot_constraint, alpha)
+    else:
+        onehot_regularization = 0
 
     # nll_loss without reduction
     return loss + onehot_regularization
