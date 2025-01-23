@@ -1649,12 +1649,6 @@ class BaseSDTrainProcess(BaseTrainProcess):
         # TRAIN LOOP
         ###################################################################
 
-
-        f = open('loss.txt', 'a')
-        f.write(str(loss.mean())+'\n')
-        f.close()
-
-
         start_step_num = self.step_num
         did_first_flush = False
         for step in range(start_step_num, self.train_config.steps):
@@ -1846,6 +1840,10 @@ class BaseSDTrainProcess(BaseTrainProcess):
         ###################################################################
         ##  END TRAIN LOOP
         ###################################################################
+
+        f = open('loss.txt', 'a')
+        f.write(str(loss_dict['loss'])+'\n')
+        f.close()
 
         self.progress_bar.close()
         if self.train_config.free_u:
