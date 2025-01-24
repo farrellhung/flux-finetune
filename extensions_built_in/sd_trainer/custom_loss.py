@@ -151,7 +151,7 @@ def one_hot_cross_entropy(input, target, weight=None, size_average=None, ignore_
     """
     # Ensure logits are converted to probabilities using log_softmax
 
-    loss = torch.nn.functional.cross_entropy(input, target, weight=weight, size_average=size_average, ignore_index=ignore_index, reduce=reduce, reduction=reduction, label_smoothing=label_smoothing)
+    loss = torch.nn.functional.cross_entropy(input, target.softmax(dim=1), weight=weight, size_average=size_average, ignore_index=ignore_index, reduce=reduce, reduction=reduction, label_smoothing=label_smoothing)
 
     # Loss One-Hot
     # lambda * absolute of input * absolute of (1-input)
