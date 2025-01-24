@@ -421,8 +421,8 @@ class SDTrainer(BaseSDTrainProcess):
             else:
                 # print("MSE 423")
                 # loss = torch.nn.functional.mse_loss(pred.float(), target.float(), reduction="none")
-                print(pred.float())
-                print(target.float())
+                print('PRED',pred.float())
+                print('TARGET',target.float())
                 loss = one_hot_cross_entropy(pred.float(), target.float(), alpha=0)
 
             # handle linear timesteps and only adjust the weight of the timesteps
