@@ -131,38 +131,69 @@ import torch.nn.functional as F
 from torch import Tensor
 from typing import Optional
 
-def one_hot_cross_entropy(input, target, weight=None, size_average=None, ignore_index=-100, 
-                       reduce=None, reduction='none', label_smoothing=0.0, alpha=1e-2):
-    """
-    Manually implemented cross-entropy loss function in Python.
+# def one_hot_cross_entropy(input, target, weight=None, size_average=None, ignore_index=-100, 
+#                        reduce=None, reduction='none', label_smoothing=0.0, alpha=1e-2):
+#     """
+#     Manually implemented cross-entropy loss function in Python.
 
-    Args:
-        input (Tensor): Predicted unnormalized logits of shape (N, C)
-        target (Tensor): Ground truth class indices of shape (N) or probabilities of shape (N, C)
-        weight (Tensor, optional): Rescaling weight for each class of shape (C)
-        size_average (bool, optional): Deprecated argument for averaging
-        ignore_index (int, optional): Index to ignore in the target
-        reduce (bool, optional): Deprecated argument for reduction
-        reduction (str): Specifies the reduction to apply: 'none' | 'mean' | 'sum'
-        label_smoothing (float, optional): Amount of label smoothing to apply, in [0.0, 1.0]
+#     Args:
+#         input (Tensor): Predicted unnormalized logits of shape (N, C)
+#         target (Tensor): Ground truth class indices of shape (N) or probabilities of shape (N, C)
+#         weight (Tensor, optional): Rescaling weight for each class of shape (C)
+#         size_average (bool, optional): Deprecated argument for averaging
+#         ignore_index (int, optional): Index to ignore in the target
+#         reduce (bool, optional): Deprecated argument for reduction
+#         reduction (str): Specifies the reduction to apply: 'none' | 'mean' | 'sum'
+#         label_smoothing (float, optional): Amount of label smoothing to apply, in [0.0, 1.0]
 
-    Returns:
-        Tensor: Calculated loss
-    """
-    # Ensure logits are converted to probabilities using log_softmax
+#     Returns:
+#         Tensor: Calculated loss
+#     """
+#     # Ensure logits are converted to probabilities using log_softmax
 
-    loss = torch.nn.functional.cross_entropy(input, target.softmax(dim=1), weight=weight, size_average=size_average, ignore_index=ignore_index, reduce=reduce, reduction=reduction, label_smoothing=label_smoothing)
+#     loss = torch.nn.functional.cross_entropy(input,
+#                                              target.softmax(dim=1),
+#                                              weight=weight,
+#                                              size_average=size_average,
+#                                              ignore_index=ignore_index,
+#                                              reduce=reduce,
+#                                              reduction="mean",
+#                                              label_smoothing=label_smoothing)
 
     # Loss One-Hot
     # lambda * absolute of input * absolute of (1-input)
     # onehot_constraint = torch.sum(torch.mul(torch.abs(input),torch.abs(torch.sub(torch.ones_like(input), input))))
-    if alpha > 0:
-        input_probabilities = input.softmax(dim=1)
-        onehot_constraint = torch.mul(input_probabilities,torch.sub(torch.ones_like(input_probabilities), input_probabilities))
-        onehot_regularization = torch.mul(onehot_constraint, alpha)
-        pass
-    else:
-        onehot_regularization = 0
+    # if alpha > 0:
+    #     input_probabilities = input.softmax(dim=1)
+    #     onehot_constraint = torch.mul(input_probabilities,torch.sub(torch.ones_like(input_probabilities), input_probabilities))
+    #     onehot_regularization = torch.mul(onehot_constraint, alpha)
+    #     pass
+    # else:
+    #     onehot_regularization = 0
 
-    # nll_loss without reduction
-    return loss + onehot_regularization
+
+def orthogonal_regularization(input, lambda_ortho=100e-2):
+    # inner = torch.inner(input, input)
+    inner = torch.matmul(input.t(), input)
+    eye = torch.eye(inner.size(0), device=input.device)
+    # eye = torch.diag(torch.flatten(row_norms ** 2))
+    
+    ortho_loss = torch.norm(torch.sub(inner, eye), p='fro')
+    ortho_loss = (ortho_loss**2)*lambda_ortho
+
+    f = open('ortho_loss.txt', 'a')
+    f.write(str(ortho_loss)+'\n')
+    f.close()
+
+    return ortho_loss
+
+def basis_regularization(input, lambda_basis=100e-2):
+    column_norms_squared = torch.sum(input**2, dim=0)
+    basis_loss = torch.sum(column_norms_squared - 1)
+    basis_loss = (basis_loss**2)*lambda_basis
+
+    f = open('basis_loss.txt', 'a')
+    f.write(str(basis_loss)+'\n')
+    f.close()
+
+    return basis_loss
