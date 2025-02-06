@@ -78,8 +78,8 @@ config:
           # you can add [trigger] to the prompts here and it will be replaced with the trigger word
           - "realistic potrait of a man in winter clothing carrying firewoods in front of a house"
           - "realistic potrait of a man [trigger] in winter clothing carrying firewoods in front of a house"
-          - "a professional in blue suit giving a speech with his hand holding a microphone"
-          - "a professional [trigger] in blue suit giving a speech with his hand holding a microphone"
+          - "a professional in blue suit giving a speech with his hand holding a microphone; front view"
+          - "a professional [trigger] in blue suit giving a speech with his hand holding a microphone; front view"
         neg: ""  # not used on flux
         seed: 1
         walk_seed: false

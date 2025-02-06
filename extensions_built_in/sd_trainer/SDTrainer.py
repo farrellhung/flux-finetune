@@ -499,6 +499,7 @@ class SDTrainer(BaseSDTrainProcess):
             loss = loss + norm_std_loss
 
         input_prob = pred.float()                              # use unnormalized logits
+        input_prob = input_prob.view(input_prob.size(0), -1)
         # input_prob = input_prob.softmax(dim=1)
         # input_prob = input_prob.log_softmax(dim=1)
         # input_prob = input_prob.softmax(dim=0)
