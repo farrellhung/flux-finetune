@@ -173,9 +173,6 @@ from typing import Optional
 
 
 def orthogonal_regularization(input, lambda_ortho=100e-2):
-    f = open('input.txt', 'a')
-    f.write(str(input)+'\n')
-    f.close()
     # inner = torch.inner(input, input)
     inner = torch.matmul(input.t(), input)
     eye = torch.eye(inner.size(0), device=input.device)
