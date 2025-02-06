@@ -486,6 +486,10 @@ class SDTrainer(BaseSDTrainProcess):
 
         loss = loss.mean()
 
+        f = open('ce_loss.txt', 'a')
+        f.write("{:.6f}".format(float(loss))+'\n')
+        f.close()
+
         # check for additional losses
         if self.adapter is not None and hasattr(self.adapter, "additional_loss") and self.adapter.additional_loss is not None:
 
