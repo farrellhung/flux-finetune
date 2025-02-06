@@ -144,7 +144,8 @@ def orthogonal_regularization(input, lambda_ortho=1e-6):
     f.write("{:.6f}".format(float(ortho_loss))+'\n')
     f.close()
 
-    return ortho_loss
+    return 0
+    # return ortho_loss
 
 def basis_regularization(input, lambda_basis=4e-6):
     basis_loss = torch.sum((torch.sum(input**2, dim=2) - 1)**2)
@@ -154,4 +155,5 @@ def basis_regularization(input, lambda_basis=4e-6):
     f.write("{:.6f}".format(float(basis_loss))+'\n')
     f.close()
 
-    return basis_loss
+    return 0
+    # return basis_loss
