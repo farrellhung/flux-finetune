@@ -131,7 +131,7 @@ import torch.nn.functional as F
 from torch import Tensor
 from typing import Optional
 
-def orthogonal_regularization(input, lambda_ortho=1e-6):
+def orthogonal_regularization(input, lambda_ortho=8e-8):
     transpose = torch.transpose(input,2,3)
     inner = torch.matmul(transpose, input)
     eye = torch.eye(inner.size(2), device=input.device)
@@ -144,10 +144,9 @@ def orthogonal_regularization(input, lambda_ortho=1e-6):
     f.write("{:.6f}".format(float(ortho_loss))+'\n')
     f.close()
 
-    return 0
-    # return ortho_loss
+    return ortho_loss
 
-def basis_regularization(input, lambda_basis=4e-6):
+def basis_regularization(input, lambda_basis=4e-7):
     basis_loss = torch.sum((torch.sum(input**2, dim=2) - 1)**2)
     basis_loss = basis_loss*lambda_basis
 
@@ -155,5 +154,4 @@ def basis_regularization(input, lambda_basis=4e-6):
     f.write("{:.6f}".format(float(basis_loss))+'\n')
     f.close()
 
-    return 0
-    # return basis_loss
+    return basis_loss
