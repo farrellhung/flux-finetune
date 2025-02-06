@@ -173,12 +173,12 @@ from typing import Optional
 
 
 def orthogonal_regularization(input, lambda_ortho=100e-2):
-    # inner = torch.inner(input, input)
-    inner = torch.matmul(input.t(), input)
-    eye = torch.eye(inner.size(0), device=input.device)
+    transpose = torch.transpose(input,2,3)
+    inner = torch.matmul(transpose, input)
+    eye = torch.eye(inner.size(2), device=input.device)
     # eye = torch.diag(torch.flatten(row_norms ** 2))
     
-    ortho_loss = torch.norm(torch.sub(inner, eye), p='fro')
+    ortho_loss = torch.norm(inner - eye, p='fro')
     ortho_loss = (ortho_loss**2)*lambda_ortho
 
     f = open('ortho_loss.txt', 'a')
@@ -188,9 +188,8 @@ def orthogonal_regularization(input, lambda_ortho=100e-2):
     return ortho_loss
 
 def basis_regularization(input, lambda_basis=100e-2):
-    column_norms_squared = torch.sum(input**2, dim=0)
-    basis_loss = torch.sum(column_norms_squared - 1)
-    basis_loss = (basis_loss**2)*lambda_basis
+    basis_loss = torch.sum((torch.sum(input**2, dim=2) - 1)**2)
+    basis_loss = basis_loss*lambda_basis
 
     f = open('basis_loss.txt', 'a')
     f.write(str(basis_loss)+'\n')
