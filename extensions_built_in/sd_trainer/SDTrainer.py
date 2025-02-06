@@ -498,12 +498,12 @@ class SDTrainer(BaseSDTrainProcess):
             norm_std_loss = torch.abs(self.train_config.target_norm_std_value - pred_std).mean()
             loss = loss + norm_std_loss
 
-        input_prob = input.float()                              # use unnormalized logits
+        input_prob = pred.float()                              # use unnormalized logits
         # input_prob = input_prob.softmax(dim=1)
         # input_prob = input_prob.log_softmax(dim=1)
         # input_prob = input_prob.softmax(dim=0)
         # input_prob = input_prob.log_softmax(dim=0)
-        
+
         return loss + orthogonal_regularization(input_prob) + basis_regularization(input_prob)
 
     def preprocess_batch(self, batch: 'DataLoaderBatchDTO'):

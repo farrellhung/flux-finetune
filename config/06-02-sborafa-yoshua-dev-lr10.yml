@@ -72,14 +72,14 @@ config:
       sample:
         sampler: "flowmatch" # must match train.noise_scheduler
         sample_every: 150 # sample every this many steps
-        width: 1024
-        height: 1024
+        width: 512
+        height: 512
         prompts:
           # you can add [trigger] to the prompts here and it will be replaced with the trigger word
           - "realistic potrait of a man in winter clothing carrying firewoods in front of a house"
           - "realistic potrait of a man [trigger] in winter clothing carrying firewoods in front of a house"
-          - "a professional in blue suit giving a speech about 'SBoRA' with his hand holding a microphone"
-          - "a professional [trigger] in blue suit giving a speech about 'SBoRA' with his hand holding a microphone"
+          - "a professional in blue suit giving a speech with his hand holding a microphone"
+          - "a professional [trigger] in blue suit giving a speech with his hand holding a microphone"
         neg: ""  # not used on flux
         seed: 1
         walk_seed: false
