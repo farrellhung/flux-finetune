@@ -422,7 +422,7 @@ class SDTrainer(BaseSDTrainProcess):
                 # loss = torch.nn.functional.mse_loss(pred.float(), target.float(), reduction="none")
                 # print('PRED',pred.float())
                 # print('TARGET',target.float())
-                loss = torch.nn.functional.cross_entropy(pred.float(), target.float(), reduction="none")
+                loss = torch.nn.functional.cross_entropy(pred.float(), target.float().softmax(dim=2), reduction="none")
 
             # handle linear timesteps and only adjust the weight of the timesteps
             if self.sd.is_flow_matching and (self.train_config.linear_timesteps or self.train_config.linear_timesteps2):
@@ -503,10 +503,8 @@ class SDTrainer(BaseSDTrainProcess):
             loss = loss + norm_std_loss
 
         input_prob = pred.float()                              # use unnormalized logits
-        # input_prob = input_prob.softmax(dim=1)
-        # input_prob = input_prob.log_softmax(dim=1)
-        # input_prob = input_prob.softmax(dim=0)
-        # input_prob = input_prob.log_softmax(dim=0)
+        # input_prob = input_prob.softmax(dim=2)
+        # input_prob = input_prob.log_softmax(dim=2)
 
         return loss + orthogonal_regularization(input_prob) + basis_regularization(input_prob)
 
